@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+
+  webserver:
+    image: web/webserver:local
+    build:
+      dockerfile: Dockerfile
+      target: webserver
+      context: .
+    # depends_on:
+      # - backend
+    ports:
+      - 80:80
+      - 443:443
+
+  backend:
+    image: web/backend:local
+    build:
+      dockerfile: Dockerfile
+      target: backend
+      context: .
+    deploy:
+      replicas: 2
