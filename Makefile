@@ -1,5 +1,5 @@
 WEBSERVER_SERVICE			:=	webserver
-BACKEND_SERVICE				:=	backend
+APPLICATION_SERVICE				:=	application
 CERTIFICAT_PATH				:=	./.include/nginx/certificats/selfsigned.crt
 CERTIFICAT_KEY_PATH			:=	./.include/nginx/certificats/selfsigned.key
 CERTIFICAT_SUB				:=	"/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=127.0.0.1"
@@ -33,8 +33,8 @@ logs:
 exec-w:
 	@docker compose exec $(WEBSERVER_SERVICE) sh
 
-exec-b:
-	@docker compose exec $(BACKEND_SERVICE) sh
+exec-a:
+	@docker compose exec $(APPLICATION_SERVICE) sh
 
 # ECDSA certificat
 update-certificat:

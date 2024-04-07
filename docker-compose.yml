@@ -3,22 +3,18 @@ version: '3.8'
 services:
 
   webserver:
-    image: web/webserver:local
-    build:
-      dockerfile: Dockerfile
-      target: webserver
-      context: .
-    # depends_on:
-      # - backend
-    ports:
-      - 80:80
-      - 443:443
+    extends:
+      file: docker-compose.base.yml
+      service: webserver
+    volumes:
+      - ./assets/img:/var/www/html/img:ro
+      - ./assets/logo:/var/www/html/logo:ro
 
-  backend:
-    image: web/backend:local
+  application:
+    extends:
+      file: docker-compose.base.yml
+      service: application
     build:
-      dockerfile: Dockerfile
-      target: backend
-      context: .
-    deploy:
-      replicas: 2
+      target: application_development
+    volumes:
+      - ./srcs:/var/www/html:ro
