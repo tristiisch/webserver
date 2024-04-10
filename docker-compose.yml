@@ -16,5 +16,7 @@ services:
       service: application
     build:
       target: application_development
+    environment:
+      XDEBUG_MODE: "debug"
     volumes:
       - ./srcs:/var/www/html:ro
