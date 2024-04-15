@@ -1,5 +1,5 @@
 WEBSERVER_SERVICE			:=	webserver
-APPLICATION_SERVICE				:=	application
+APPLICATION_SERVICE			:=	application
 CERTIFICAT_PATH				:=	./.include/nginx/certificats/selfsigned.crt
 CERTIFICAT_KEY_PATH			:=	./.include/nginx/certificats/selfsigned.key
 CERTIFICAT_SUB				:=	"/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=127.0.0.1"
