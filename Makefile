@@ -4,7 +4,7 @@ CERTIFICAT_PATH				:=	./.include/nginx/certificats/selfsigned.crt
 CERTIFICAT_KEY_PATH			:=	./.include/nginx/certificats/selfsigned.key
 CERTIFICAT_SUB				:=	"/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=127.0.0.1"
 
-all: start-f logs
+all: start logs
 
 start:
 	@docker compose up -d --remove-orphans
