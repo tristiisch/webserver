@@ -8,9 +8,6 @@ services:
       dockerfile: Dockerfile
       target: webserver
       context: .
-    ports:
-      - 80:80
-      - 443:443
 
   application:
     image: "web/application:${TAG-local}"

@@ -9,6 +9,9 @@ services:
     volumes:
       - ./assets/img:/var/www/html/img:ro
       - ./assets/logo:/var/www/html/logo:ro
+    ports:
+      - 80:80
+      - 443:443
 
   application:
     extends:
