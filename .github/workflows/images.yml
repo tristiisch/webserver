@@ -21,7 +21,7 @@ on:
   workflow_dispatch:
 
 env:
-    REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}
+    REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}/web
     IMAGE_PHP_BASE_NAME: php
     IMAGE_PHP_APP_NAME: app
     IMAGE_WEBSERVER_NAME: webserver
@@ -103,7 +103,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.php_major }}-${{ matrix.php_environnement }}-${{ env.PLATFORM_PAIR }}
+          name: ${{ env.IMAGE_PHP_BASE_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}-${{ env.PLATFORM_PAIR }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -127,7 +127,7 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
-          pattern: digests-${{ matrix.php_major }}-${{ matrix.php_environnement }}-*
+          pattern: ${{ env.IMAGE_PHP_BASE_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}-*
           path: /tmp/digests
           merge-multiple: true
 
@@ -231,7 +231,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-${{ matrix.php_major }}-${{ matrix.php_environnement }}-${{ env.PLATFORM_PAIR }}
+          name: ${{ env.IMAGE_PHP_APP_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}-${{ env.PLATFORM_PAIR }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -255,7 +255,7 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
-          pattern: digests-${{ matrix.php_major }}-${{ matrix.php_environnement }}-*
+          pattern: ${{ env.IMAGE_PHP_APP_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}-*
           path: /tmp/digests
           merge-multiple: true
 
@@ -350,7 +350,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-webserver-${{ env.PLATFORM_PAIR }}
+          name: ${{ env.IMAGE_WEBSERVER_NAME }}-${{ env.PLATFORM_PAIR }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
@@ -364,7 +364,7 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
-          pattern: digests-webserver-*
+          pattern: ${{ env.IMAGE_WEBSERVER_NAME }}-*
           path: /tmp/digests
           merge-multiple: true
 
@@ -383,11 +383,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_WEBSERVER_NAME }}
           tags: |
-            type=raw,value=latest,enable=${{ matrix.php_environnement == 'production' && matrix.php_major == '8' }}
-            type=raw,value=production,enable=${{ matrix.php_environnement == 'production' && matrix.php_major == '8' }}
-            type=raw,value=development,enable=${{ matrix.php_environnement == 'development' && matrix.php_major == '8' }}
-            type=raw,value=${{ matrix.php_major }},enable=${{ matrix.php_environnement == 'production' }}
-            type=raw,value=${{ matrix.php_major }}-${{ matrix.php_environnement }}
+            type=raw,value=latest
 
       - name: Create manifest list and push
         working-directory: /tmp/digests

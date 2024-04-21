@@ -3,17 +3,23 @@ version: '3.8'
 services:
 
   webserver:
-    image: "web/webserver:${TAG-local}"
+    image: "${WEBSERVER_IMAGE-web/webserver}:${WEBSERVER_TAG-local}"
     build:
       dockerfile: Dockerfile
       target: webserver
       context: .
+    deploy:
+      replicas: 1
+      placement:
+        constraints: [node.role == worker]
 
   application:
-    image: "web/application:${TAG-local}"
+    image: "${APPLICATION_IMAGE-web/application}:${APPLICATION_TAG-local}"
     build:
       dockerfile: Dockerfile
       target: application_production
       context: .
     deploy:
       replicas: 2
+      placement:
+        constraints: [node.role == worker]

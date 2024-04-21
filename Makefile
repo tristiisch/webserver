@@ -3,6 +3,9 @@ APPLICATION_SERVICE			:=	application
 CERTIFICAT_PATH				:=	./.include/nginx/certificats/selfsigned.crt
 CERTIFICAT_KEY_PATH			:=	./.include/nginx/certificats/selfsigned.key
 CERTIFICAT_SUB				:=	"/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=127.0.0.1"
+STACK_PROD					:= web
+COMPOSE_PROD				:= ./docker-compose.base.yml
+ENV_PROD					:= .env.prod
 
 all: start logs
 
@@ -35,6 +38,9 @@ exec-w:
 
 exec-a:
 	@docker compose exec $(APPLICATION_SERVICE) sh
+
+deploy-prod:
+	@export $(shell cat $(ENV_PROD)) > /dev/null 2>&1; docker stack deploy -c $(COMPOSE_PROD) $(STACK_PROD)
 
 # ECDSA certificat
 update-certificat:
