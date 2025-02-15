@@ -1,13 +1,13 @@
-# Dockerized Webserver with NginX, FastCGI, and PHP-FPM
+# PHP Dockerized with NGinX, and PHP-FPM
 
-This repository serves as a template for PHP projects within a Docker environment. It includes an advanced configuration for NginX, a production-ready PHP image, and a development image with XDebug integrated. The primary goal is to facilitate testing project clustering by running multiple PHP instances with a single NginX instance.
+This repository serves as a template for PHP projects within a Docker environment. It includes an advanced configuration for NGinX, a production-ready PHP image, and a development image with XDebug integrated. The primary goal is to facilitate testing project clustering by running multiple PHP instances with a single NGinX instance.
 
 The Dockerfiles adhere to security best practices, ensuring:
 - Applications are launched by a non-root user.
 - This user has no write permissions on pre-existing files.
 
 ## Load Balancing
-The setup employs a round-robin configuration where NginX evenly distributes requests to each PHP instance. For example, with 5 requests and 3 PHP instances:
+The setup employs a round-robin configuration where NGinX evenly distributes requests to each PHP instance. For example, with 5 requests and 3 PHP instances:
 1. Sent to PHP instance 1
 2. Sent to PHP instance 2
 3. Sent to PHP instance 3
@@ -15,20 +15,20 @@ The setup employs a round-robin configuration where NginX evenly distributes req
 5. Sent to PHP instance 2
 and so forth...
 
-This straightforward approach effectively distributes the workload across multiple instances in any Docker environment. NginX handles load balancing; the load balancing feature of NginX is not utilized here.
+This straightforward approach effectively distributes the workload across multiple instances in any Docker environment. NGinX handles load balancing; the load balancing feature of NGinX is not utilized here.
 
-## NginX
-NginX is configured for HTTP. Popular error pages have been customized. A health check, utilized by Docker, is set to the URL /status_nginx. HTTP requests are temporarily redirected, preventing automatic redirection caching on the client's browser.
+## NGinX
+NGinX is configured for HTTP. Popular error pages have been customized. A health check, utilized by Docker, is set to the URL /status_nginx. HTTP requests are temporarily redirected, preventing automatic redirection caching on the client's browser.
 
 ## PHP
 Based on PHP 8, the `PHP_MAJOR` argument allows choosing between versions 5, 7, and 8. In development mode, the image includes the XDebug tool (https://xdebug.org/). In production mode, the image utilizes recommended production parameters by PHP.
 
-PHP-FPM logs are configured for use behind a reverse proxy (such as NginX).
+PHP-FPM logs are configured for use behind a reverse proxy (such as NGinX).
 
 ## GitHub Package
-This project generates a PHP image [ghcr.io/tristiisch/webserver/php`](https://github.com/users/tristiisch/packages/container/package/webserver%2Fphp). You can simply use it in your Dockerfiles and add your sources to the current directory like so:
+This project generates a PHP image [ghcr.io/tristiisch/docker-php/fpm`](https://github.com/users/tristiisch/packages/container/package/docker-php%2fpm). You can simply use it in your Dockerfiles and add your sources to the current directory like so:
 ```
-FROM ghcr.io/tristiisch/webserver/php:latest
+FROM ghcr.io/tristiisch/docker-php/fpm:latest
 COPY --chown=root:1000 --chmod=550 ./srcs ./
 ```
 Everything else is configured to work with FastCGI using the default port: 9000.

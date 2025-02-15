@@ -11,8 +11,8 @@ services:
       update_config:
         order: start-first
 
-  webserver:
-    image: "${WEBSERVER_REPO:+${WEBSERVER_REPO}/}${WEBSERVER_IMAGE?}:${WEBSERVER_TAG?}"
+  proxy:
+    image: "${PROXY_REPO:+${PROXY_REPO}/}${PROXY_IMAGE?}:${PROXY_TAG?}"
     networks:
       - default
       - traefik

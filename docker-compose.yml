@@ -1,7 +1,7 @@
 services:
 
   application:
-    image: "webserver/application:local"
+    image: "docker-php/application:local"
     build:
       dockerfile: ./.include/php/Dockerfile
       target: app_development
@@ -11,8 +11,8 @@ services:
     deploy:
       replicas: 2
 
-  webserver:
-    image: "webserver/nginx:local"
+  proxy:
+    image: "docker-php/nginx:local"
     build:
       dockerfile: ./.include/nginx/Dockerfile
       target: default

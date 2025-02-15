@@ -1,4 +1,4 @@
-WEBSERVER_SERVICE			:=	webserver
+PROXY_SERVICE				:=	proxy
 APPLICATION_SERVICE			:=	application
 
 STACK_PROD					:= web
@@ -22,7 +22,7 @@ logs:
 	@docker compose logs -f -n 100
 
 exec-nginx:
-	@docker compose exec $(WEBSERVER_SERVICE) sh
+	@docker compose exec $(PROXY_SERVICE) sh
 
 exec-php:
 	@docker compose exec $(APPLICATION_SERVICE) sh
