@@ -1,25 +1,33 @@
 WEBSERVER_SERVICE			:=	webserver
 APPLICATION_SERVICE			:=	application
+
 CERTIFICAT_PATH				:=	./.include/nginx/certificats/selfsigned.crt
 CERTIFICAT_KEY_PATH			:=	./.include/nginx/certificats/selfsigned.key
 CERTIFICAT_SUB				:=	"/C=FR/ST=IDF/L=Paris/O=42/OU=42/CN=127.0.0.1"
+
 STACK_PROD					:= web
-COMPOSE_PROD				:= ./docker-compose.base.yml
+COMPOSE_PROD				:= ./.docker/docker-compose.prod.yml
 ENV_PROD					:= .env.prod
 
-all: start logs
+all: build up logs
 
-start:
+build:
+	@docker compose build --pull
+
+up:
 	@docker compose up -d --remove-orphans
 
-start-f:
+up-f:
 	@docker compose up -d --remove-orphans --force-recreate
 
-start-b:
-	@docker compose up -d --remove-orphans --build
+logs:
+	@docker compose logs -f -n 100
 
-stop:
-	@docker compose stop
+exec-nginx:
+	@docker compose exec $(WEBSERVER_SERVICE) sh
+
+exec-php:
+	@docker compose exec $(APPLICATION_SERVICE) sh
 
 down:
 	@docker compose down
@@ -27,20 +35,9 @@ down:
 down-v:
 	@docker compose down -v
 
-config:
-	@docker compose config
-
-logs:
-	@docker compose logs -f -n 100
-
-exec-w:
-	@docker compose exec $(WEBSERVER_SERVICE) sh
-
-exec-a:
-	@docker compose exec $(APPLICATION_SERVICE) sh
-
 deploy-prod:
-	@export $(shell cat $(ENV_PROD)) > /dev/null 2>&1; docker stack deploy -c $(COMPOSE_PROD) $(STACK_PROD)
+	include $(ENV_PROD)
+	docker stack deploy -c $(COMPOSE_PROD) $(STACK_PROD)
 
 # ECDSA certificat
 update-certificat:

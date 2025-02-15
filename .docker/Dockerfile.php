@@ -2,7 +2,7 @@ ARG USER="www-data"
 ARG PHP_MAJOR="8"
 
 # <=========================> PHP base <=========================>
-FROM php:$PHP_MAJOR-fpm-alpine as php_base
+FROM php:$PHP_MAJOR-fpm-alpine AS base
 ARG USER
 ARG PHP_MAJOR
 EXPOSE 9000/tcp
@@ -29,17 +29,26 @@ RUN php-fpm -tt
 # Command at startup
 CMD ["php-fpm"]
 
-# <=========================> PHP production <=========================>
-FROM php_base as php_production
+# <=========================> Base production <=========================>
+FROM base AS base_production
 
 # PHP Config
 COPY --chown=root:$USER --chmod=550 ./.include/php/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
 
+# SRCS
+COPY --chown=root:$USER --chmod=550 ./srcs ./
+
+# <=========================> APP production <=========================>
+FROM base_production AS app_production
+
+# SRCS
+COPY --chown=root:$USER --chmod=550 ./srcs ./
+
 # <=========================> PHP development <=========================>
-FROM php_base as php_development
+FROM base AS base_development
 ARG USER
 
-# Debug Tool
+# Debug Tools
 USER root
 ENV XDEBUG_TRIGGER "yes"
 RUN apk add --virtual xdebug-deps --upgrade --no-cache autoconf g++ make linux-headers \
@@ -72,7 +81,6 @@ RUN apk add --virtual xdebug-deps --upgrade --no-cache autoconf g++ make linux-h
 	esac \
 	&& docker-php-ext-enable xdebug \
 	&& apk del xdebug-deps \
-	&& rm -rf /tmp/* /var/cache/apk/* \
 	&& case "$PHP_VERSION" in \
 		"4"*|"5"*|"7.0"*|"7.1"*) \
 			{ \
@@ -105,57 +113,11 @@ USER $USER
 COPY --chown=root:$USER --chmod=550 ./.include/php/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
 COPY --chown=root:$USER --chmod=550 ./.include/php/php-dev.ini /usr/local/etc/php/conf.d/02-php-dev.ini
 
-# <=========================> Application production <=========================>
-FROM php_production as application_production
-
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
 
-# <=========================> Application development <=========================>
-FROM php_development as application_development
+# <=========================> APP production <=========================>
+FROM base_development AS app_development
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
-
-# <========================> NGinX <========================>
-FROM nginx:stable-alpine as webserver
-ARG USER="nginx"
-EXPOSE 80/tcp 443/tcp
-
-# Cache
-RUN mkdir -p /var/cache/nginx \
-	&& chown root:$USER -R /var/cache/nginx \
-	&& chmod 770 -R /var/cache/nginx
-
-# Config
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/nginx.conf /etc/nginx/nginx.conf
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/status.conf /etc/nginx/status.conf
-
-# Certificats
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/certificats/selfsigned.crt /etc/ssl/certs/
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/certificats/selfsigned.key /etc/ssl/private/
-
-WORKDIR /var/www
-
-# Errors pages
-RUN mkdir -p ./errors \
-	&& chown root:$USER -R ./errors \
-	&& chmod 550 -R ./errors \
-	&& mkdir -p ./html/errors \
-	&& chown root:$USER -R ./html/errors\
-	&& chmod 550 -R ./html/errors
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/errors/*.html ./errors
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/errors/*.css ./html/errors
-
-# Assets
-COPY --chown=root:$USER --chmod=550 ./assets ./html/assets
-
-HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
-  CMD curl --fail --location --insecure http://localhost/status_nginx || exit 1
-
-# Validate configuration
-RUN nginx -t
-
-# USER $USER
-
-CMD ["nginx", "-g", "daemon off;"]

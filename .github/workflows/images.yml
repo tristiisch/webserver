@@ -6,8 +6,7 @@ on:
       - "*"
     paths:
       - ".include/**"
-      - "docker-compose*.yml"
-      - "Dockerfile"
+      - ".docker/**"
       - ".github/workflows/images.yml"
   pull_request:
     types: [opened, synchronize]
@@ -15,8 +14,7 @@ on:
       - "*"
     paths:
       - ".include/**"
-      - "docker-compose.base.yml"
-      - "Dockerfile"
+      - ".docker/**"
       - ".github/workflows/images.yml"
   workflow_dispatch:
 
@@ -24,7 +22,7 @@ env:
     REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}/web
     IMAGE_PHP_BASE_NAME: php
     IMAGE_PHP_APP_NAME: app
-    IMAGE_WEBSERVER_NAME: webserver
+    IMAGE_WEBSERVER_NAME: nginx
 
 jobs:
 
@@ -83,6 +81,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
+          file: ./.docker/Dockerfile.php
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -91,7 +90,7 @@ jobs:
           provenance: mode=max
           build-args: |
             PHP_MAJOR=${{ matrix.php_major }}
-          target: php_${{ matrix.php_environnement }}
+          target: base_${{ matrix.php_environnement }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_PHP_BASE_NAME }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
@@ -111,6 +110,7 @@ jobs:
   docker_image_push_base:
     name: "Base - Push Docker"
     runs-on: ubuntu-latest
+    needs: ["docker_image_build_base"]
     strategy:
       fail-fast: false
       matrix:
@@ -121,7 +121,6 @@ jobs:
         php_environnement:
           - "production"
           - "development"
-    needs: ["docker_image_build_base"]
 
     steps:
       - name: Download digests
@@ -211,6 +210,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
+          file: ./.docker/Dockerfile.php
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -219,7 +219,7 @@ jobs:
           provenance: mode=max
           build-args: |
             PHP_MAJOR=${{ matrix.php_major }}
-          target: application_${{ matrix.php_environnement }}
+          target: app_${{ matrix.php_environnement }}
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_PHP_APP_NAME }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
@@ -285,7 +285,7 @@ jobs:
         run: docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf '${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_PHP_APP_NAME }}@sha256:%s ' *)
 
   docker_image_build_webserver:
-    name: "Webserver - Build Docker"
+    name: "NGinX - Build Docker"
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -332,13 +332,14 @@ jobs:
         id: build
         uses: docker/build-push-action@v5
         with:
+          file: ./.docker/Dockerfile.nginx
           context: .
           platforms: ${{ matrix.platform }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           provenance: mode=max
-          target: webserver
+          target: default
           outputs: type=image,name=${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_WEBSERVER_NAME }},push-by-digest=true,name-canonical=true,push=true
 
       - name: Export digest
@@ -356,7 +357,7 @@ jobs:
           retention-days: 1
 
   docker_image_push_webserver:
-    name: "Webserver - Push Docker"
+    name: "NGinX - Push Docker"
     runs-on: ubuntu-latest
     needs: ["docker_image_build_webserver"]
 

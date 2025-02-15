@@ -1,25 +1,27 @@
-version: '3.8'
-
 services:
 
+  application:
+    image: "${APPLICATION_IMAGE-web/application}:${APPLICATION_TAG-local}"
+    build:
+      dockerfile: ./.docker/Dockerfile.php
+      target: app_development
+      context: .
+    volumes:
+      - ./srcs:/var/www/html:ro
+    deploy:
+      replicas: 2
+
   webserver:
-    extends:
-      file: docker-compose.base.yml
-      service: webserver
+    image: "${WEBSERVER_IMAGE-web/webserver}:${WEBSERVER_TAG-local}"
+    build:
+      dockerfile: ./.docker/Dockerfile.nginx
+      target: default
+      context: .
     volumes:
       - ./assets/img:/var/www/html/img:ro
       - ./assets/logo:/var/www/html/logo:ro
     ports:
       - 80:80
       - 443:443
-
-  application:
-    extends:
-      file: docker-compose.base.yml
-      service: application
-    build:
-      target: application_development
-    environment:
-      XDEBUG_MODE: "debug"
-    volumes:
-      - ./srcs:/var/www/html:ro
+    deploy:
+      replicas: 1
