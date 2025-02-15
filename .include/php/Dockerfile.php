@@ -10,14 +10,14 @@ EXPOSE 9000/tcp
 # Health Check
 RUN apk add --upgrade --no-cache fcgi \
 	&& rm -rf /var/cache/apk/*
-COPY ./.include/php/healthcheck.sh /usr/local/bin/php-fpm-healthcheck
+COPY ./.include/php/scripts/healthcheck.sh /usr/local/bin/php-fpm-healthcheck
 RUN chmod +x /usr/local/bin/php-fpm-healthcheck
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
     CMD php-fpm-healthcheck || exit 1
 ENV FCGI_STATUS_PATH="/status_php_fpm"
 
 # FPM Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/fpm-${PHP_MAJOR}.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=root:$USER --chmod=550 ./.include/php/configs/fpm-${PHP_MAJOR}.conf /usr/local/etc/php-fpm.d/www.conf
 
 # User & Workdir
 USER $USER
@@ -33,7 +33,7 @@ CMD ["php-fpm"]
 FROM base AS base_production
 
 # PHP Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
+COPY --chown=root:$USER --chmod=550 ./.include/php/configs/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
@@ -110,13 +110,13 @@ RUN apk add --virtual xdebug-deps --upgrade --no-cache autoconf g++ make linux-h
 USER $USER
 
 # PHP Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
-COPY --chown=root:$USER --chmod=550 ./.include/php/php-dev.ini /usr/local/etc/php/conf.d/02-php-dev.ini
+COPY --chown=root:$USER --chmod=550 ./.include/php/configs/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
+COPY --chown=root:$USER --chmod=550 ./.include/php/configs/php-dev.ini /usr/local/etc/php/conf.d/02-php-dev.ini
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
 
-# <=========================> APP production <=========================>
+# <=========================> APP development <=========================>
 FROM base_development AS app_development
 
 # SRCS

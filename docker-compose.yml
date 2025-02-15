@@ -3,7 +3,7 @@ services:
   application:
     image: "${APPLICATION_IMAGE-web/application}:${APPLICATION_TAG-local}"
     build:
-      dockerfile: ./.docker/Dockerfile.php
+      dockerfile: ./.include/php/Dockerfile
       target: app_development
       context: .
     volumes:
@@ -14,7 +14,7 @@ services:
   webserver:
     image: "${WEBSERVER_IMAGE-web/webserver}:${WEBSERVER_TAG-local}"
     build:
-      dockerfile: ./.docker/Dockerfile.nginx
+      dockerfile: ./.include/nginx/Dockerfile
       target: default
       context: .
     volumes:
