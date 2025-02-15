@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 env:
-    REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}
+    REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}/webserver
     IMAGE_PHP_BASE_NAME: php
     IMAGE_PHP_APP_NAME: app
     IMAGE_WEBSERVER_NAME: nginx
