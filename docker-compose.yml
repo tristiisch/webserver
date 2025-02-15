@@ -12,7 +12,7 @@ services:
       replicas: 2
 
   webserver:
-    image: "webserver/webserver:local"
+    image: "webserver/nginx:local"
     build:
       dockerfile: ./.include/nginx/Dockerfile
       target: default

@@ -26,8 +26,9 @@ Based on PHP 8, the `PHP_MAJOR` argument allows choosing between versions 5, 7, 
 PHP-FPM logs are configured for use behind a reverse proxy (such as NginX).
 
 ## GitHub Package
-This project generates a PHP image (`ghcr.io/tristiisch/php`): https://github.com/tristiisch/webserver/pkgs/container/php. You can simply use it in your Dockerfiles and add your sources to the current directory like so:
+This project generates a PHP image [ghcr.io/tristiisch/webserver/php`](https://github.com/users/tristiisch/packages/container/package/webserver%2Fphp). You can simply use it in your Dockerfiles and add your sources to the current directory like so:
 ```
+FROM ghcr.io/tristiisch/webserver/php:latest
 COPY --chown=root:1000 --chmod=550 ./srcs ./
 ```
 Everything else is configured to work with FastCGI using the default port: 9000.
@@ -36,4 +37,4 @@ The following tags are available:
 `latest`, `8`, `8-production`, `7`, `7-production`, `5`, `5-production`
 `development`, `8-development`, `7-development`, `5-development`
 
-Refer to the files in `.include/php`, `docker-compose.base.yml`, `docker-compose.yml`, and `Dockerfile` for insights into creating and utilizing these images.
+Refer to the files in `.include/php`, `docker-compose.yml` for insights into creating and utilizing these images.
