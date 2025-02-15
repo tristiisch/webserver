@@ -17,7 +17,7 @@ HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
 ENV FCGI_STATUS_PATH="/status_php_fpm"
 
 # FPM Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/configs/fpm-${PHP_MAJOR}.conf /usr/local/etc/php-fpm.d/www.conf
+COPY --chown=root:$USER --chmod=550 ./.include/php/configs/fpm-${PHP_MAJOR}.ini /usr/local/etc/php-fpm.d/www.conf
 
 # User & Workdir
 USER $USER
