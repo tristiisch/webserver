@@ -22,6 +22,5 @@ services:
       - ./assets/logo:/var/www/html/logo:ro
     ports:
       - 80:80
-      - 443:443
     deploy:
       replicas: 1

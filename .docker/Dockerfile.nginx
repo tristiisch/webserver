@@ -11,10 +11,6 @@ RUN mkdir -p /var/cache/nginx \
 COPY --chown=root:$USER --chmod=550 ./.include/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY --chown=root:$USER --chmod=550 ./.include/nginx/status.conf /etc/nginx/status.conf
 
-# Certificats
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/certificats/selfsigned.crt /etc/ssl/certs/
-COPY --chown=root:$USER --chmod=550 ./.include/nginx/certificats/selfsigned.key /etc/ssl/private/
-
 WORKDIR /var/www
 
 # Errors pages

@@ -18,7 +18,7 @@ and so forth...
 This straightforward approach effectively distributes the workload across multiple instances in any Docker environment. NginX handles load balancing; the load balancing feature of NginX is not utilized here.
 
 ## NginX
-NginX is configured for both HTTP and HTTPS with a self-signed certificate. Running `make update-certificate` recreates and updates this certificate in real-time. Popular error pages have been customized. A health check, utilized by Docker, is set to the URL `/status_nginx`. HTTP requests are temporarily redirected to HTTPS, ensuring no automatic redirection cache is deposited on the client's browser.
+NginX is configured for HTTP. Popular error pages have been customized. A health check, utilized by Docker, is set to the URL /status_nginx. HTTP requests are temporarily redirected, preventing automatic redirection caching on the client's browser.
 
 ## PHP
 Based on PHP 8, the `PHP_MAJOR` argument allows choosing between versions 5, 7, and 8. In development mode, the image includes the XDebug tool (https://xdebug.org/). In production mode, the image utilizes recommended production parameters by PHP.
