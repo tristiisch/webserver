@@ -1,7 +1,7 @@
 services:
 
   application:
-    image: "${APPLICATION_IMAGE-web/application}:${APPLICATION_TAG-local}"
+    image: "webserver/application:local"
     build:
       dockerfile: ./.include/php/Dockerfile
       target: app_development
@@ -12,7 +12,7 @@ services:
       replicas: 2
 
   webserver:
-    image: "${WEBSERVER_IMAGE-web/webserver}:${WEBSERVER_TAG-local}"
+    image: "webserver/webserver:local"
     build:
       dockerfile: ./.include/nginx/Dockerfile
       target: default

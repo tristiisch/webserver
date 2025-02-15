@@ -2,7 +2,7 @@ WEBSERVER_SERVICE			:=	webserver
 APPLICATION_SERVICE			:=	application
 
 STACK_PROD					:= web
-COMPOSE_PROD				:= ./.include/php/docker-compose.prod.yml
+COMPOSE_PROD				:= ./.include/docker-compose.prod.yml
 ENV_PROD					:= .env.prod
 
 PHP_CONF_PATH				:= ./.include/php/configs
@@ -34,8 +34,7 @@ down-v:
 	@docker compose down -v
 
 deploy-prod:
-	include $(ENV_PROD)
-	docker stack deploy -c $(COMPOSE_PROD) $(STACK_PROD)
+	@export $(shell grep -v '^#' $(ENV_PROD) | xargs) > /dev/null 2>&1 && docker stack deploy --detach=false -c $(COMPOSE_PROD) $(STACK_PROD)
 
 update-default-php-conf:
 	for version in 5 7 8; do \
