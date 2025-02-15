@@ -1,7 +1,7 @@
 services:
 
   application:
-    image: "${APPLICATION_REPO:+${APPLICATION_REPO}/}${APPLICATION_IMAGE?}:${APPLICATION_TAG?}"
+    image: "${APPLICATION_REPO:+${APPLICATION_REPO}/}${APPLICATION_IMAGE?}${APPLICATION_TAG:+:${APPLICATION_TAG}}"
     deploy:
       replicas: 2
       placement:
@@ -12,7 +12,7 @@ services:
         order: start-first
 
   proxy:
-    image: "${PROXY_REPO:+${PROXY_REPO}/}${PROXY_IMAGE?}:${PROXY_TAG?}"
+    image: "${PROXY_REPO:+${PROXY_REPO}/}${PROXY_IMAGE?}${PROXY_TAG:+:${PROXY_TAG}}"
     networks:
       - default
       - traefik

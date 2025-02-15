@@ -17,10 +17,10 @@ on:
   workflow_dispatch:
 
 env:
-    REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}/docker-php
-    IMAGE_PHP_BASE_NAME: fpm
-    IMAGE_PHP_APP_NAME: app
-    IMAGE_PROXY_NAME: nginx
+    REGISTRY_IMAGE: ${{ vars.DOCKER_REGISTRY_URL }}/${{ github.actor }}
+    IMAGE_PHP_BASE_NAME: php-fpm
+    IMAGE_PHP_APP_NAME: php-demo
+    IMAGE_PROXY_NAME: nginx-php
 
 jobs:
 
