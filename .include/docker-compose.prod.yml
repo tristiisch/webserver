@@ -3,13 +3,20 @@ services:
   application:
     image: "${APPLICATION_REPO:+${APPLICATION_REPO}/}${APPLICATION_IMAGE?}${APPLICATION_TAG:+:${APPLICATION_TAG}}"
     deploy:
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.platform.os == linux
           - node.role == worker
       update_config:
         order: start-first
+      resources:
+        reservations:
+          cpus: "0.06"
+          memory: "128MB"
+        limits:
+          cpus: "0.25"
+          memory: 512MB
 
   proxy:
     image: "${PROXY_REPO:+${PROXY_REPO}/}${PROXY_IMAGE?}${PROXY_TAG:+:${PROXY_TAG}}"
@@ -17,7 +24,7 @@ services:
       - default
       - traefik
     deploy:
-      replicas: 1
+      replicas: 2
       placement:
         constraints:
           - node.platform.os == linux
@@ -29,6 +36,13 @@ services:
         traefik.http.routers.${APPLICATION_NAME}.rule: "Host(`${APPLICATION_URL}`)"
         traefik.http.routers.${APPLICATION_NAME}.entrypoints: "web,websecure"
         traefik.http.services.${APPLICATION_NAME}.loadbalancer.server.port: 80
+      resources:
+        reservations:
+          cpus: "0.06"
+          memory: "30MB"
+        limits:
+          cpus: "0.25"
+          memory: "128M"
 
 networks:
   traefik:

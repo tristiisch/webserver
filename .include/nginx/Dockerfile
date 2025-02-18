@@ -26,8 +26,8 @@ COPY --chown=root:$USER --chmod=550 ./.include/nginx/errors/*.css ./html/errors
 # Assets
 COPY --chown=root:$USER --chmod=550 ./assets ./html/assets
 
-HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
-  CMD curl --fail --location --insecure http://localhost/status_nginx || exit 1
+HEALTHCHECK --interval=15s --timeout=5s --retries=5 \
+  CMD curl --fail --location http://localhost/ping_nginx || exit 1
 
 # Validate configuration
 RUN nginx -t

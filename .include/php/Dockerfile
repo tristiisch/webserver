@@ -1,30 +1,38 @@
-ARG USER="www-data"
 ARG PHP_MAJOR="8"
+ARG USER="app"
+ARG USER_ID="1000"
+ARG GROUP="app"
+ARG GROUP_ID="1000"
 
 # <=========================> PHP base <=========================>
 FROM php:$PHP_MAJOR-fpm-alpine AS base
-ARG USER
 ARG PHP_MAJOR
+ARG USER
+ARG USER_ID
+ARG GROUP
+ARG USER_ID
+ARG GROUP_ID
 EXPOSE 9000/tcp
 
 # Health Check
-RUN apk add --upgrade --no-cache fcgi \
-	&& rm -rf /var/cache/apk/*
+RUN apk add --upgrade --no-cache fcgi
 COPY ./.include/php/scripts/healthcheck.sh /usr/local/bin/php-fpm-healthcheck
 RUN chmod +x /usr/local/bin/php-fpm-healthcheck
 HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
     CMD php-fpm-healthcheck || exit 1
-ENV FCGI_STATUS_PATH="/status_php_fpm"
 
-# FPM Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/configs/fpm-${PHP_MAJOR}.ini /usr/local/etc/php-fpm.d/www.conf
+RUN addgroup -g $GROUP_ID $GROUP && \
+    adduser -D -G $USER -u $USER_ID -s /sbin/nologin app
+
+# FPM config
+COPY --chown=root:$USER --chmod=550 ./.include/php/configs/fpm-${PHP_MAJOR}.ini /usr/local/etc/php-fpm.d/zm-custom.conf
 
 # User & Workdir
 USER $USER
 WORKDIR /var/www/html
 
-# Validate configuration
-RUN php-fpm -tt
+# Validate FPM configuration
+RUN php-fpm -t
 
 # Command at startup
 CMD ["php-fpm"]
@@ -32,8 +40,11 @@ CMD ["php-fpm"]
 # <=========================> Base production <=========================>
 FROM base AS base_production
 
-# PHP Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/configs/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
+# PHP config production
+RUN cp -f /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
+
+# PHP custom production config
+COPY --chown=root:$USER --chmod=440 ./.include/php/configs/php-prod.ini /usr/local/etc/php/conf.d/zm-php.ini
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
@@ -109,9 +120,13 @@ RUN apk add --virtual xdebug-deps --upgrade --no-cache autoconf g++ make linux-h
 	&& chown -R $USER:$USER /opt/debug_profiler && chown -R $USER:$USER /var/log/php
 USER $USER
 
-# PHP Config
-COPY --chown=root:$USER --chmod=550 ./.include/php/configs/php-prod.ini /usr/local/etc/php/conf.d/01-php-prod.ini
-COPY --chown=root:$USER --chmod=550 ./.include/php/configs/php-dev.ini /usr/local/etc/php/conf.d/02-php-dev.ini
+# PHP config development
+USER root
+RUN cp -f /usr/local/etc/php/php.ini-development /usr/local/etc/php/php.ini
+USER $USER
+
+# PHP custom dev config
+COPY --chown=root:$USER --chmod=440 ./.include/php/configs/php-dev.ini /usr/local/etc/php/conf.d/zm-php.ini
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
