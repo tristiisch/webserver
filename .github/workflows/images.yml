@@ -249,7 +249,6 @@ jobs:
           - "8"
         php_environnement:
           - "production"
-          - "development"
     if: (github.ref_type == 'tag') || (github.ref_type == 'branch' && github.ref == 'refs/heads/main')
 
     steps:
