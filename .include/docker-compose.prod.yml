@@ -1,7 +1,7 @@
 services:
 
   application:
-    image: "${APPLICATION_REPO:+${APPLICATION_REPO}/}${APPLICATION_IMAGE?}${APPLICATION_TAG:+:${APPLICATION_TAG}}"
+    image: "${APPLICATION_IMAGE?}"
     deploy:
       replicas: 3
       placement:
@@ -19,7 +19,7 @@ services:
           memory: 512MB
 
   proxy:
-    image: "${PROXY_REPO:+${PROXY_REPO}/}${PROXY_IMAGE?}${PROXY_TAG:+:${PROXY_TAG}}"
+    image: "${PROXY_IMAGE?}"
     networks:
       - default
       - traefik
@@ -32,10 +32,10 @@ services:
       update_config:
         order: start-first
       labels:
-        traefik.enable: "true"
-        traefik.http.routers.${APPLICATION_NAME}.rule: "Host(`${APPLICATION_URL}`)"
-        traefik.http.routers.${APPLICATION_NAME}.entrypoints: "web,websecure"
-        traefik.http.services.${APPLICATION_NAME}.loadbalancer.server.port: 80
+        - traefik.enable=true
+        - traefik.http.routers.${APPLICATION_NAME}.rule=Host(`${APPLICATION_URL}`)
+        - traefik.http.routers.${APPLICATION_NAME}.entrypoints=web,websecure
+        - traefik.http.services.${APPLICATION_NAME}.loadbalancer.server.port=80
       resources:
         reservations:
           cpus: "0.06"

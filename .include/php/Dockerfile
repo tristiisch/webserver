@@ -40,6 +40,8 @@ CMD ["php-fpm"]
 # <=========================> Base production <=========================>
 FROM base AS base_production
 
+USER root
+
 # PHP config production
 RUN cp -f /usr/local/etc/php/php.ini-production /usr/local/etc/php/php.ini
 
@@ -48,6 +50,8 @@ COPY --chown=root:$USER --chmod=440 ./.include/php/configs/php-prod.ini /usr/loc
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
+
+USER $USER
 
 # <=========================> APP production <=========================>
 FROM base_production AS app_production
