@@ -498,4 +498,4 @@ jobs:
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
-        run: docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf '${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_PROXY_NAME }}@sha256:%s ' *)
+        run: docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") $(printf '${{ env.REGISTRY_IMAGE }}/${{ env.IMAGE_PROXY_APP_NAME }}@sha256:%s ' *)
