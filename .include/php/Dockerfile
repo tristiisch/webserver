@@ -53,12 +53,6 @@ COPY --chown=root:$USER --chmod=550 ./srcs ./
 
 USER $USER
 
-# <=========================> APP production <=========================>
-FROM base_production AS app_production
-
-# SRCS
-COPY --chown=root:$USER --chmod=550 ./srcs ./
-
 # <=========================> PHP development <=========================>
 FROM base AS base_development
 ARG USER
@@ -131,12 +125,6 @@ USER $USER
 
 # PHP custom dev config
 COPY --chown=root:$USER --chmod=440 ./.include/php/configs/php-dev.ini /usr/local/etc/php/conf.d/zm-php.ini
-
-# SRCS
-COPY --chown=root:$USER --chmod=550 ./srcs ./
-
-# <=========================> APP development <=========================>
-FROM base_development AS app_development
 
 # SRCS
 COPY --chown=root:$USER --chmod=550 ./srcs ./
