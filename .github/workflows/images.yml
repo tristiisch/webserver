@@ -162,9 +162,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - linux/amd64
-          - linux/arm64
         php_major:
           - "5"
           - "7"
@@ -173,11 +170,6 @@ jobs:
           - "production"
 
     steps:
-      - name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -231,7 +223,7 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.IMAGE_PHP_APP_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}-${{ env.PLATFORM_PAIR }}
+          name: ${{ env.IMAGE_PHP_APP_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
