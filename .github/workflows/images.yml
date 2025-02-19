@@ -247,7 +247,7 @@ jobs:
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
-          pattern: ${{ env.IMAGE_PHP_APP_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}-*
+          pattern: ${{ env.IMAGE_PHP_APP_NAME }}-${{ matrix.php_major }}-${{ matrix.php_environnement }}
           path: /tmp/digests
           merge-multiple: true
 
