@@ -3,7 +3,7 @@ services:
   application:
     image: "docker-php/php-demo:local"
     build:
-      dockerfile: ./.include/php/Dockerfile
+      dockerfile: ./.include/php-demo/Dockerfile
       target: app_development
       context: .
     volumes:
@@ -24,3 +24,15 @@ services:
       - 80:80
     deploy:
       replicas: 2
+
+  proxy_metrics:
+    image: nginx/nginx-prometheus-exporter:1.4.0
+    command:
+      - --nginx.scrape-uri=http://proxy/status_nginx
+    networks:
+      - default
+      - metrics
+
+networks:
+  metrics:
+    external: true

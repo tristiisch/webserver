@@ -44,6 +44,16 @@ services:
           cpus: "0.25"
           memory: "128M"
 
+  proxy_metrics:
+    image: nginx/nginx-prometheus-exporter:1.4.0
+    command:
+      - --nginx.scrape-uri=http://proxy/status_nginx
+    networks:
+      - default
+      - metrics
+
 networks:
   traefik:
+    external: true
+  metrics:
     external: true
